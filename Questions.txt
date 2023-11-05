@@ -1,0 +1,41 @@
+Difference b/w Rest Template and @Requestbody?
+Rest Template is used in microservice based project to fetch data from json and convert it to java object(getForObject) and vice versa (postForObject)
+whether @Requestbody is generally used in api based project where it is not capable of converting java object back to json, that part is done by @Restcontroller itself
+
+What is the last job you've done./ further modification
+1.if user provides an old password he will get a message "old password is given". instead of "invalid username/password".
+
+What are the bugs that you have fixed?
+
+How did you secured you project/ How did you implemented Spring Security?
+There are 2 parts in spring security one is Authentication another is authorization. 
+->For Authentication first of all we make AuthController and from where we could fetch the username and password in the login method and provide it to
+  CoustomUserDetailsService class which implements UserDetailsService which has a inbuilt method called loadUserByUsername where the authentication of username 
+  and   password is basically done
+->For authorization first of all 2 entity class was created one is user another is role where basically a role will be provided for the user (ie. is he a normal     user or a admin) and Many to Many mapping is established between these two. as there can be multiple user and admin and one person can be both user and admin at   a time. In the user repository some Custom methods are declared like findyUsernameOrEmail(String UsernameOrEmail) to make use of it in the authentication part
+  (inside loadUserByUsername it is used to fetch the signin details)
+
+What are the problems you've faced?
+#Compile time
+1. Bean creation Exception at the time of creating table.solution
+     a. The error message suggests that the Hibernate framework is unable to determine the type of the profileImage field in the User entity class, which is of type MultipartFile from the Spring framework.
+     To fix this issue, we need to add an attribute to ignore the profileImage field from Hibernate's mapping process. We can use the @Transient annotation to ignore a field in the entity.
+
+     b.Whenever composite key(more than 2 column is unique) is there in entity class implemet serializable for that entity
+
+Runtime
+
+2. Could not write JSON: Infinite recursion (StackOverflowError)
+    This error occurs when there is a circular reference between two or more entities, causing an infinite loop when the Jackson serializer tries to serialize the objects into JSON format.
+    To fix this error, you can use the @JsonIgnore annotation to break the circular reference
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Order> orders;
+
+Compole time
+
+3.When declaring a customed method (it will find the List<shipping> based on oderId)in shipping repository It was declared as findByOrderId and it was showing error because
+The error message suggests that the query method findByOrderId in ShippingRepository is trying to access a property called id on the Order entity, but it does not exist. 
+This is because the relationship between Shipping and Order is defined using a property called order, not id.
+To fix the issue, change the query method to use findByOrderOrderId instead of findByOrderId
+
